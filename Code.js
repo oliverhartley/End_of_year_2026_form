@@ -7,12 +7,15 @@ const SPREADSHEET_ID = '1370PuPE1cxzt8vJgUpcw69AU5KPk04WBU6oh5xWUBKk';
 const SEND_SHEET_NAME = 'Send_Form';
 const SEND_SHEET_LEADERSHIP = 'Send_Googlers';
 const RESPONSES_SHEET_NAME = 'Partner Responses';
-const RESPONSES_SHEET_LEADERSHIP = 'Googlers Responses';
+const RESPONSES_SHEET_LEADERSHIP = 'Form Responses 3';
 
 /**
  * Menu for easy access
  */
 function onOpen() {
+  // Temporary Fix: Ensure the correct Leadership Form ID is set as per user report
+  PropertiesService.getScriptProperties().setProperty('FORM_ID_LEADERSHIP', '1sjhxyGLCZoZLSveNg0CQUbvf2n_QLS8dSnRBhsFIFvs');
+
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Feedback System')
     .addSubMenu(ui.createMenu('Partners')
