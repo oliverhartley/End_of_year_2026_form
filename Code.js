@@ -49,7 +49,7 @@ function sendReminders() {
  * Checks responses for partners.
  */
 function checkResponses() {
-  processGeneralResponses(SEND_SHEET_NAME, RESPONSES_SHEET_NAME, 0); // Column A corresponds to Email (Index 0 in responses)
+  processGeneralResponses(SEND_SHEET_NAME, RESPONSES_SHEET_NAME, 4); // Column D (4) has the email in the screenshot
 }
 
 /**
@@ -70,7 +70,7 @@ function sendLeadershipReminders() {
  * Checks responses for Leadership.
  */
 function checkLeadershipResponses() {
-  processGeneralResponses(SEND_SHEET_LEADERSHIP, RESPONSES_SHEET_LEADERSHIP, 1); // Leadership form uses Column B for email (Index 1)
+  processGeneralResponses(SEND_SHEET_LEADERSHIP, RESPONSES_SHEET_LEADERSHIP, 2); // Leadership form uses Column B (2) for auto-collected email
 }
 
 /**
