@@ -21,6 +21,7 @@ function onOpen() {
       .addItem('Check Responses', 'checkResponses'))
     .addSubMenu(ui.createMenu('Leadership (Internal)')
       .addItem('Setup Internal System (Create Form)', 'setupLeadershipSystem')
+      .addItem('Link Existing Leadership Form ID', 'linkExistingLeadershipForm')
       .addItem('Send Initial Emails', 'sendLeadershipEmails')
       .addItem('Send Reminders', 'sendLeadershipReminders')
       .addItem('Check Responses', 'checkLeadershipResponses'))
@@ -299,6 +300,24 @@ function setupLeadershipSystem() {
 
   Logger.log("Leadership System Initialized!\n\nNew Form ID: " + formId + "\n\nPlease note the secondary 'Form Responses' tab that was just created automatically.");
 }
+
+/**
+ * Manually link an existing form ID to the leadership system.
+ */
+function linkExistingLeadershipForm() {
+  const ui = SpreadsheetApp.getUi();
+  const response = ui.prompt('Link Existing Leadership Form', 'Please paste the Google Form ID for Leadership:', ui.ButtonSet.OK_CANCEL);
+
+  if (response.getSelectedButton() == ui.Button.OK) {
+    const formId = response.getResponseText().trim();
+    if (formId) {
+      PropertiesService.getScriptProperties().setProperty('FORM_ID_LEADERSHIP', formId);
+      Logger.log("Linked Leadership Form ID: " + formId);
+      ui.alert("Form ID successfully linked!");
+    }
+  }
+}
+
 
 /**
  * Utility to rename existing sheets if they follow the default naming pattern.
