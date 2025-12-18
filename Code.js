@@ -174,10 +174,22 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
 function processGeneralResponses(sendSheetName, respSheetName, emailColIndex) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sendSheet = ss.getSheetByName(sendSheetName);
-  const responsesSheet = ss.getSheetByName(respSheetName);
+  let responsesSheet = ss.getSheetByName(respSheetName);
+
+  // Fallback check: if the standard name isn't found, try common defaults
+  if (!responsesSheet) {
+    const fallbacks = ['Form Responses 1', 'Form Responses 2', 'Form Responses 3', 'Form_Responses2'];
+    for (const fb of fallbacks) {
+      responsesSheet = ss.getSheetByName(fb);
+      if (responsesSheet) {
+        Logger.log(`Sheet '${respSheetName}' not found. Found fallback: '${fb}'`);
+        break;
+      }
+    }
+  }
 
   if (!sendSheet || !responsesSheet) {
-    Logger.log("Missing sheets: " + sendSheetName + " or " + respSheetName);
+    Logger.log("Error: Missing primary or fallback sheets for: " + respSheetName);
     return;
   }
 
@@ -199,18 +211,29 @@ function processGeneralResponses(sendSheetName, respSheetName, emailColIndex) {
   const statusRange = sendSheet.getRange(2, 5, sendLastRow - 1, 1);
   const currentStatuses = statusRange.getValues();
   const newStatuses = [];
+  let updatedCount = 0;
 
   for (let i = 0; i < emails.length; i++) {
     const email = emails[i][0].toString().trim().toLowerCase();
+
+    // Check for direct match or domain-agnostic match if needed
     if (respondingEmails.has(email)) {
-      newStatuses.push(['Responded']);
+      if (currentStatuses[i][0] !== 'Responded') {
+        newStatuses.push(['Responded']);
+        updatedCount++;
+      } else {
+        newStatuses.push([currentStatuses[i][0]]);
+      }
     } else {
       newStatuses.push([currentStatuses[i][0]]);
     }
   }
 
-  if (newStatuses.length > 0) statusRange.setValues(newStatuses);
-  Logger.log(`Response check complete for ${sendSheetName}`);
+  if (newStatuses.length > 0) {
+    statusRange.setValues(newStatuses);
+  }
+
+  Logger.log(`Response check complete for ${sendSheetName}. New responses identified: ${updatedCount}`);
 }
 
 
