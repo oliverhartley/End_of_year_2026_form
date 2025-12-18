@@ -117,7 +117,7 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
     'email_pt': 'Sua opini\u00e3o \u00e9 fundamental para 2026 - Google Cloud Readiness',
     'reminder_pt': 'Lembrete: Sua vis\u00e3o 2026',
     'email_en': 'Feedback for 2026 - Google Cloud Readiness',
-    'reminder_en': 'Reminder: Feedback for 2026'
+    'reminder_en': 'Feedback for Google Cloud Readiness Team 2026'
   };
 
   // Prepare inline image blob if ID exists
