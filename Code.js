@@ -114,8 +114,8 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
     'reminder_es': 'Recordatorio: Tu visi\u00f3n es clave para el 2026',
     'email_pt': 'Sua opini\u00e3o \u00e9 fundamental para 2026 - Google Cloud Readiness',
     'reminder_pt': 'Lembrete: Sua vis\u00e3o 2026',
-    'email_en': 'Excellence in 2026: Leadership Vision - Google Cloud Readiness',
-    'reminder_en': 'Reminder: Your 2026 Vision'
+    'email_en': 'Feedback for 2026 - Google Cloud Readiness',
+    'reminder_en': 'Reminder: Feedback for 2026'
   };
 
   let count = 0;
