@@ -139,7 +139,7 @@ function processGeneralEmails(sheetName, formId, templateName, subject, isRemind
   const sheet = ss.getSheetByName(sheetName);
   if (!sheet) {
     Logger.log("Sheet not found: " + sheetName);
-    SpreadsheetApp.getUi().alert("Error: Sheet '" + sheetName + "' no existe. Ejecuta 'Setup Internal System' primero.");
+    Logger.log("Error: Sheet '" + sheetName + "' no existe. Ejecuta 'Setup Internal System' primero.");
     return;
   }
 
@@ -151,7 +151,7 @@ function processGeneralEmails(sheetName, formId, templateName, subject, isRemind
 
   let currentFormUrl;
   if (!formId) {
-    SpreadsheetApp.getUi().alert("Error: FORM_ID_LEADERSHIP no configurado en el script.");
+    Logger.log("Error: FORM_ID_LEADERSHIP no configurado en el script.");
     return;
   }
 
@@ -288,7 +288,7 @@ function setupLeadershipSystem() {
   Logger.log("New Form Created: " + formUrl);
   Logger.log("Form ID (save this): " + formId);
 
-  SpreadsheetApp.getUi().alert("Leadership System Initialized!\n\nNew Form ID: " + formId + "\n\nPlease note the secondary 'Form Responses' tab that was just created automatically.\n\nYou should update FORM_ID_LEADERSHIP in the script if you want to automate reminders for this form.");
+  Logger.log("Leadership System Initialized!\n\nNew Form ID: " + formId + "\n\nPlease note the secondary 'Form Responses' tab that was just created automatically.\n\nYou should update FORM_ID_LEADERSHIP in the script if you want to automate reminders for this form.");
 }
 
 /**
@@ -312,8 +312,8 @@ function renameResponseSheets() {
   }
 
   if (renamedCount > 0) {
-    SpreadsheetApp.getUi().alert(`Se han renombrado ${renamedCount} hoja(s).`);
+    Logger.log(`Se han renombrado ${renamedCount} hoja(s).`);
   } else {
-    SpreadsheetApp.getUi().alert("No se encontraron hojas con los nombres predeterminados (Form Responses 1/2). Es posible que ya las hayas renombrado.");
+    Logger.log("No se encontraron hojas con los nombres predeterminados (Form Responses 1/2). Es posible que ya las hayas renombrado.");
   }
 }
