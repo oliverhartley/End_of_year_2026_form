@@ -113,9 +113,9 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
 
   const subjects = {
     'email_es': 'Tu opini\u00f3n es clave para el 2026 - Google Cloud Readiness',
-    'reminder_es': 'Recordatorio: Tu visi\u00f3n es clave para el 2026',
+    'reminder_es': 'Recordatorio: Tu visi\u00f3n es clave para el equipo Google Cloud Readiness 2026',
     'email_pt': 'Sua opini\u00e3o \u00e9 fundamental para 2026 - Google Cloud Readiness',
-    'reminder_pt': 'Lembrete: Sua vis\u00e3o 2026',
+    'reminder_pt': 'Lembrete: Sua vis\u00e3o \u00e9 fundamental para a equipe Google Cloud Readiness 2026',
     'email_en': 'Feedback for 2026 - Google Cloud Readiness',
     'reminder_en': 'Feedback for Google Cloud Readiness Team 2026'
   };
