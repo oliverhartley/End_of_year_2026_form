@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body {
+      font-family: 'Google Sans', 'Roboto', 'Segoe UI', Arial, sans-serif;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      color: #3c4043;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+    }
+    .header {
+      background-color: #4285f4;
+      padding: 40px 40px;
+      text-align: center;
+    }
+    .header h1 {
+      color: #ffffff;
+      margin: 0;
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+    .content {
+      padding: 40px;
+      line-height: 1.6;
+    }
+    .greeting {
+      font-size: 18px;
+      color: #202124;
+      margin-bottom: 24px;
+    }
+    .message {
+      margin-bottom: 32px;
+      color: #5f6368;
+    }
+    .message p {
+      margin-bottom: 16px;
+    }
+    .highlight {
+      color: #1a73e8;
+      font-weight: 500;
+    }
+    .cta-container {
+      text-align: center;
+      margin: 40px 0;
+    }
+    .button {
+      background-color: #1a73e8;
+      color: #ffffff;
+      padding: 14px 32px;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 500;
+      font-size: 16px;
+      display: inline-block;
+      transition: background-color 0.2s;
+    }
+    /* Email clients might strip hover, but good for web view */
+    .button:hover {
+      background-color: #1765cc;
+    }
+    .footer {
+      background-color: #f1f3f4;
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #5f6368;
+    }
+    .gemini-badge {
+      display: inline-flex;
+      align-items: center;
+      background: linear-gradient(90deg, #eff7cf 0%, #ecf3fe 100%);
+      padding: 8px 16px;
+      border-radius: 16px;
+      font-size: 12px;
+      color: #3c4043;
+      margin-top: 20px;
+      font-weight: 500;
+    }
+    .gemini-icon {
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Google Cloud Readiness</h1>
+    </div>
+    <div class="content">
+      <div class="greeting">Hola,</div>
+      
+      <div class="message">
+        <p>
+          Como parte del equipo de <strong>Google Cloud Readiness</strong>, nuestra misión es asegurar la excelencia en los despliegues de proyectos de nuestros clientes.
+        </p>
+        <p>
+          Para lograrlo, necesitamos tu visión. Queremos escucharte para construir juntos el futuro.
+        </p>
+        <p>
+          Te invitamos a compartir tus ideas sobre las actividades de este año y, lo más importante, <strong>¿en qué deberíamos enfocarnos para el 2026?</strong>
+        </p>
+        <ul>
+          <li>¿Qué necesitan de nosotros?</li>
+          <li>¿Qué nuevas ideas tienen?</li>
+          <li>¿Qué sienten que hace falta?</li>
+        </ul>
+        <p>
+          Hemos preparado <strong>una única pregunta abierta</strong> para que puedas expresarte con total libertad y creatividad.
+        </p>
+        
+        <div style="text-align: center;">
+          <div class="gemini-badge">
+            <span>✨ Analizado por Gemini</span>
+          </div>
+          <p style="font-size: 12px; color: #5f6368; margin-top: 8px;">
+            Todas las respuestas serán analizadas por Gemini para extraer los insights más valiosos.
+          </p>
+        </div>
+      </div>
+
+      <div class="cta-container">
+        <a href="<?= formUrl ?>" class="button">Compartir mis ideas</a>
+      </div>
+    </div>
+    <div class="footer">
+      <p>&copy; 2025 Google Cloud Readiness Team</p>
+      <p>Este correo fue enviado automáticamente.</p>
+    </div>
+  </div>
+</body>
+</html>
