@@ -118,29 +118,13 @@ function processEmails(templateName, subject, isReminder) {
 }
 
 /**
- * Leadership Wrapper Functions
- */
-function sendLeadershipEmails() {
-  processGeneralEmails(SEND_SHEET_LEADERSHIP, FORM_ID_LEADERSHIP, 'email', 'Feedback para el 2026: Una visi\u00f3n de liderazgo', false);
-}
-
-function sendLeadershipReminders() {
-  processGeneralEmails(SEND_SHEET_LEADERSHIP, FORM_ID_LEADERSHIP, 'reminder', 'Recordatorio: Feedback para el 2026', true);
-}
-
-function checkLeadershipResponses() {
-  processGeneralResponses(SEND_SHEET_LEADERSHIP, RESPONSES_SHEET_LEADERSHIP, 2); // Typically Column B for email in linked forms
-}
-
-/**
  * Generic Processor for Emails
  */
-function processGeneralEmails(sheetName, formId, templateName, subject, isReminder) {
+function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLanguageRouting) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(sheetName);
   if (!sheet) {
-    Logger.log("Sheet not found: " + sheetName);
-    Logger.log("Error: Sheet '" + sheetName + "' no existe. Ejecuta 'Setup Internal System' primero.");
+    Logger.log("Error: Sheet '" + sheetName + "' no existe.");
     return;
   }
 
@@ -152,22 +136,25 @@ function processGeneralEmails(sheetName, formId, templateName, subject, isRemind
 
   let currentFormId = formId;
   if (!currentFormId) {
-    // Fallback to ScriptProperties
     currentFormId = PropertiesService.getScriptProperties().getProperty('FORM_ID_LEADERSHIP');
   }
 
   if (!currentFormId) {
-    Logger.log("Error: FORM_ID_LEADERSHIP no configurado en el script.");
-    Logger.log("Sugerencia: Ejecuta 'Setup Internal System' primero o pega el ID en el script.");
+    Logger.log("Error: Form ID no configurado.");
     return;
   }
 
   const form = FormApp.openById(currentFormId);
-  let currentFormUrl = form.getPublishedUrl();
+  const formUrl = form.getPublishedUrl();
 
-  const htmlTemplate = HtmlService.createTemplateFromFile(templateName);
-  htmlTemplate.formUrl = currentFormUrl;
-  const htmlBody = htmlTemplate.evaluate().getContent();
+  const subjects = {
+    'email_es': 'Tu opini\u00f3n es clave para el 2026 - Google Cloud Readiness',
+    'reminder_es': 'Recordatorio: Tu visi\u00f3n es clave para el 2026',
+    'email_pt': 'Sua opini\u00e3o \u00e9 fundamental para 2026 - Google Cloud Readiness',
+    'reminder_pt': 'Lembrete: Sua vis\u00e3o 2026',
+    'email_en': 'Excellence in 2026: Leadership Vision - Google Cloud Readiness',
+    'reminder_en': 'Reminder: Your 2026 Vision'
+  };
 
   let count = 0;
   const statusUpdates = [];
@@ -185,7 +172,21 @@ function processGeneralEmails(sheetName, formId, templateName, subject, isRemind
     }
 
     if (shouldSend && email && email.toString().includes('@')) {
+      let langSuffix = '_es';
+      if (useLanguageRouting && email.toString().toLowerCase().endsWith('.br')) {
+        langSuffix = '_pt';
+      } else if (!useLanguageRouting) {
+        langSuffix = ''; // Template already has fully qualified name (e.g. email_en)
+      }
+
+      const finalTemplate = useLanguageRouting ? (baseTemplate + langSuffix) : baseTemplate;
+      const subject = subjects[finalTemplate] || 'Feedback 2026';
+
       try {
+        const htmlTemplate = HtmlService.createTemplateFromFile(finalTemplate);
+        htmlTemplate.formUrl = formUrl;
+        const htmlBody = htmlTemplate.evaluate().getContent();
+
         GmailApp.sendEmail(email, subject, '', {
           htmlBody: htmlBody,
           name: 'Google Cloud Readiness Team'
@@ -205,7 +206,7 @@ function processGeneralEmails(sheetName, formId, templateName, subject, isRemind
     sheet.getRange(2, 4, statusUpdates.length, 1).setValues(statusUpdates);
   }
 
-  Logger.log(`${isReminder ? 'Reminders' : 'Initial emails'} sent to ${sheetName}: ${count}`);
+  Logger.log(`Processed ${sheetName}: ${count} emails sent.`);
 }
 
 /**
@@ -283,7 +284,7 @@ function setupLeadershipSystem() {
 
   // Add the open creativity question
   newForm.addParagraphTextItem()
-    .setTitle('\u00bfEn qu\u00e9 deber\u00eda enfocarse el equipo de Readiness en 2026? Comparte tus ideas, feedback y visi\u00f3n creativa.')
+    .setTitle('Where should the Readiness team focus in 2026? Share your ideas, feedback, and creative vision.')
     .setRequired(true);
 
   // Link to spreadsheet
