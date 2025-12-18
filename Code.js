@@ -169,6 +169,14 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
 }
 
 /**
+ * Extracts LDAP (the part before @) for robust internal matching.
+ */
+function getLdap(email) {
+  if (!email || !email.toString().includes('@')) return email ? email.toString().toLowerCase().trim() : '';
+  return email.toString().split('@')[0].toLowerCase().trim();
+}
+
+/**
  * Generic Processor for Responses
  */
 function processGeneralResponses(sendSheetName, respSheetName, emailColIndex) {
@@ -182,7 +190,7 @@ function processGeneralResponses(sendSheetName, respSheetName, emailColIndex) {
     for (const fb of fallbacks) {
       responsesSheet = ss.getSheetByName(fb);
       if (responsesSheet) {
-        Logger.log(`Sheet '${respSheetName}' not found. Found fallback: '${fb}'`);
+        Logger.log(`Note: Sheet '${respSheetName}' not found. Using fallback: '${fb}'`);
         break;
       }
     }
@@ -195,12 +203,17 @@ function processGeneralResponses(sendSheetName, respSheetName, emailColIndex) {
 
   const respLastRow = responsesSheet.getLastRow();
   const respondingEmails = new Set();
+  const respondingLdaps = new Set();
 
   if (respLastRow >= 2) {
     const respData = responsesSheet.getRange(2, emailColIndex, respLastRow - 1, 1).getValues();
     for (let i = 0; i < respData.length; i++) {
-      const email = respData[i][0];
-      if (email) respondingEmails.add(email.toString().trim().toLowerCase());
+      const rawEmail = respData[i][0];
+      if (rawEmail) {
+        const cleanEmail = rawEmail.toString().trim().toLowerCase();
+        respondingEmails.add(cleanEmail);
+        respondingLdaps.add(getLdap(cleanEmail));
+      }
     }
   }
 
@@ -214,10 +227,14 @@ function processGeneralResponses(sendSheetName, respSheetName, emailColIndex) {
   let updatedCount = 0;
 
   for (let i = 0; i < emails.length; i++) {
-    const email = emails[i][0].toString().trim().toLowerCase();
+    const rawEmail = emails[i][0];
+    const email = rawEmail ? rawEmail.toString().trim().toLowerCase() : "";
+    const ldap = getLdap(email);
 
-    // Check for direct match or domain-agnostic match if needed
-    if (respondingEmails.has(email)) {
+    // Internal matching is now more robust: Check Full Email OR just the LDAP
+    const hasResponded = respondingEmails.has(email) || (ldap && respondingLdaps.has(ldap));
+
+    if (hasResponded) {
       if (currentStatuses[i][0] !== 'Responded') {
         newStatuses.push(['Responded']);
         updatedCount++;
@@ -233,7 +250,12 @@ function processGeneralResponses(sendSheetName, respSheetName, emailColIndex) {
     statusRange.setValues(newStatuses);
   }
 
-  Logger.log(`Response check complete for ${sendSheetName}. New responses identified: ${updatedCount}`);
+  Logger.log(`--- Diagnostics for ${sendSheetName} ---`);
+  Logger.log(`Sheet Used: ${responsesSheet.getName()}`);
+  Logger.log(`Responding Emails found: ${Array.from(respondingEmails).join(", ")}`);
+  Logger.log(`Total rows processed: ${emails.length}`);
+  Logger.log(`New responses identified: ${updatedCount}`);
+  Logger.log(`------------------------------------------`);
 }
 
 
