@@ -35,87 +35,42 @@ function onOpen() {
  * Sends initial emails to partners.
  */
 function sendEmails() {
-  processGeneralEmails(SEND_SHEET_NAME, FORM_ID, 'email', 'Tu opini\u00f3n es clave para el 2026 - Google Cloud Readiness', false);
+  processGeneralEmails(SEND_SHEET_NAME, FORM_ID, 'email', false, true);
 }
 
 /**
  * Sends reminders to partners.
  */
 function sendReminders() {
-  processGeneralEmails(SEND_SHEET_NAME, FORM_ID, 'reminder', 'Recordatorio: Tu visi\u00f3n es clave para el 2026', true);
+  processGeneralEmails(SEND_SHEET_NAME, FORM_ID, 'reminder', true, true);
 }
 
 /**
  * Checks responses for partners.
  */
 function checkResponses() {
-  processGeneralResponses(SEND_SHEET_NAME, RESPONSES_SHEET_NAME, 4); // Column D is #4
+  processGeneralResponses(SEND_SHEET_NAME, RESPONSES_SHEET_NAME, 0); // Column A corresponds to Email (Index 0 in responses)
 }
 
 /**
- * Core logic to process and send emails or reminders.
+ * Sends initial emails to Leadership (English).
  */
-function processEmails(templateName, subject, isReminder) {
-  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(SEND_SHEET_NAME);
-  if (!sheet) {
-    Logger.log("Sheet not found: " + SEND_SHEET_NAME);
-    return;
-  }
+function sendLeadershipEmails() {
+  processGeneralEmails(SEND_SHEET_LEADERSHIP, null, 'email_en', false, false);
+}
 
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return;
+/**
+ * Sends reminders to Leadership (English).
+ */
+function sendLeadershipReminders() {
+  processGeneralEmails(SEND_SHEET_LEADERSHIP, null, 'reminder_en', true, false);
+}
 
-  // Read A (Email), D (Shared Status), E (Responded Status)
-  const range = sheet.getRange(2, 1, lastRow - 1, 5);
-  const data = range.getValues();
-
-  const form = FormApp.openById(FORM_ID);
-  const formUrl = form.getPublishedUrl();
-  const htmlTemplate = HtmlService.createTemplateFromFile(templateName);
-  htmlTemplate.formUrl = formUrl;
-  const htmlBody = htmlTemplate.evaluate().getContent();
-
-  let count = 0;
-  const statusUpdates = [];
-
-  for (let i = 0; i < data.length; i++) {
-    const email = data[i][0];
-    const sharedStatus = data[i][3]; // Column D
-    const respondedStatus = data[i][4]; // Column E
-
-    let shouldSend = false;
-    if (isReminder) {
-      // Send reminder if shared but not responded
-      shouldSend = (sharedStatus === 'Shared' && respondedStatus !== 'Responded');
-    } else {
-      // Send initial if not shared yet
-      shouldSend = (!sharedStatus || sharedStatus === '');
-    }
-
-    if (shouldSend && email && email.toString().includes('@')) {
-      try {
-        GmailApp.sendEmail(email, subject, '', {
-          htmlBody: htmlBody,
-          name: 'Google Cloud Readiness Team'
-        });
-        statusUpdates.push(['Shared']);
-        count++;
-      } catch (e) {
-        Logger.log(`Failed to send to ${email}: ${e.message}`);
-        statusUpdates.push([sharedStatus || 'Error: ' + e.message]);
-      }
-    } else {
-      statusUpdates.push([sharedStatus]);
-    }
-  }
-
-  // Update Column D
-  if (statusUpdates.length > 0) {
-    sheet.getRange(2, 4, statusUpdates.length, 1).setValues(statusUpdates);
-  }
-
-  Logger.log(`${isReminder ? 'Reminders' : 'Initial emails'} sent: ${count}`);
+/**
+ * Checks responses for Leadership.
+ */
+function checkLeadershipResponses() {
+  processGeneralResponses(SEND_SHEET_LEADERSHIP, RESPONSES_SHEET_LEADERSHIP, 1); // Leadership form uses Column B for email (Index 1)
 }
 
 /**
@@ -130,7 +85,10 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
   }
 
   const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return;
+  if (lastRow < 2) {
+    Logger.log("No hay destinatarios en la hoja: " + sheetName);
+    return;
+  }
 
   const range = sheet.getRange(2, 1, lastRow - 1, 5);
   const data = range.getValues();
@@ -141,7 +99,7 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
   }
 
   if (!currentFormId) {
-    Logger.log("Error: Form ID no configurado.");
+    Logger.log("Error: Form ID no configurado para Leadership.");
     return;
   }
 
@@ -177,7 +135,7 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
       if (useLanguageRouting && email.toString().toLowerCase().endsWith('.br')) {
         langSuffix = '_pt';
       } else if (!useLanguageRouting) {
-        langSuffix = ''; // Template already has fully qualified name (e.g. email_en)
+        langSuffix = ''; // Leadership already provides 'email_en'
       }
 
       const finalTemplate = useLanguageRouting ? (baseTemplate + langSuffix) : baseTemplate;
