@@ -12,16 +12,30 @@ const RESPONSES_SHEET_NAME = 'Form Responses 1';
 function onOpen() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('Feedback System')
-    .addItem('Send Emails (Batch)', 'sendEmails')
+    .addItem('Send Initial Emails (Batch)', 'sendEmails')
+    .addItem('Send Reminders (Batch)', 'sendReminders')
     .addItem('Check Responses & Update Status', 'checkResponses')
     .addToUi();
 }
 
 /**
- * Sends emails to partners in 'Send_Form' who haven't received it yet.
- * Checks Column D (Status) to avoid duplicates.
+ * Sends initial emails to partners in 'Send_Form' who haven't received it yet.
  */
 function sendEmails() {
+  processEmails('email', 'Tu opini\u00f3n es clave para el 2026 - Google Cloud Readiness', false);
+}
+
+/**
+ * Sends reminders to those who were shared the form but haven't responded yet.
+ */
+function sendReminders() {
+  processEmails('reminder', 'Recordatorio: Tu visi\u00f3n es clave para el 2026', true);
+}
+
+/**
+ * Core logic to process and send emails or reminders.
+ */
+function processEmails(templateName, subject, isReminder) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(SEND_SHEET_NAME);
   if (!sheet) {
@@ -30,48 +44,49 @@ function sendEmails() {
   }
 
   const lastRow = sheet.getLastRow();
-  if (lastRow < 2) return; // No data
+  if (lastRow < 2) return;
 
-  // Columns: A=Email, B=..., C=..., D=Status
-  // We read A:D
-  const dataRange = sheet.getRange(2, 1, lastRow - 1, 4);
-  const data = dataRange.getValues();
+  // Read A (Email), D (Shared Status), E (Responded Status)
+  const range = sheet.getRange(2, 1, lastRow - 1, 5);
+  const data = range.getValues();
 
-  // Load HTML template
   const form = FormApp.openById(FORM_ID);
   const formUrl = form.getPublishedUrl();
-  const htmlTemplate = HtmlService.createTemplateFromFile('email');
+  const htmlTemplate = HtmlService.createTemplateFromFile(templateName);
   htmlTemplate.formUrl = formUrl;
   const htmlBody = htmlTemplate.evaluate().getContent();
 
-  let emailsSent = 0;
-
-  // We will update status in batch
+  let count = 0;
   const statusUpdates = [];
 
   for (let i = 0; i < data.length; i++) {
     const email = data[i][0];
-    const currentStatus = data[i][3]; // Column D (index 3)
+    const sharedStatus = data[i][3]; // Column D
+    const respondedStatus = data[i][4]; // Column E
 
-    if (currentStatus === 'Shared' || currentStatus === 'Responded') {
-      statusUpdates.push([currentStatus]); // Keep existing status
-      continue;
+    let shouldSend = false;
+    if (isReminder) {
+      // Send reminder if shared but not responded
+      shouldSend = (sharedStatus === 'Shared' && respondedStatus !== 'Responded');
+    } else {
+      // Send initial if not shared yet
+      shouldSend = (!sharedStatus || sharedStatus === '');
     }
 
-    if (email && email.toString().includes('@')) {
+    if (shouldSend && email && email.toString().includes('@')) {
       try {
-        GmailApp.sendEmail(email, 'Tu opinión es clave para el 2026 - Google Cloud Readiness', '', {
+        GmailApp.sendEmail(email, subject, '', {
           htmlBody: htmlBody,
           name: 'Google Cloud Readiness Team'
         });
         statusUpdates.push(['Shared']);
-        emailsSent++;
+        count++;
       } catch (e) {
         Logger.log(`Failed to send to ${email}: ${e.message}`);
-        statusUpdates.push(['Error: ' + e.message]);
+        statusUpdates.push([sharedStatus || 'Error: ' + e.message]);
       }
     } else {
-      statusUpdates.push([currentStatus || 'Invalid Email']);
+      statusUpdates.push([sharedStatus]);
     }
   }
 
@@ -80,7 +95,7 @@ function sendEmails() {
     sheet.getRange(2, 4, statusUpdates.length, 1).setValues(statusUpdates);
   }
 
-  Logger.log(`Sent ${emailsSent} emails.`);
+  Logger.log(`${isReminder ? 'Reminders' : 'Initial emails'} sent: ${count}`);
 }
 
 /**
