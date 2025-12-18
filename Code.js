@@ -179,10 +179,16 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
   }
 
   if (statusUpdates.length > 0) {
-    sheet.getRange(2, 4, statusUpdates.length, 1).setValues(statusUpdates);
+    const updateRange = sheet.getRange(2, 4, statusUpdates.length, 1);
+    updateRange.setValues(statusUpdates);
+    SpreadsheetApp.flush(); // Force changes to appear in the UI immediately
+    Logger.log(`Updated status column (D) for ${statusUpdates.length} rows in ${sheetName}.`);
   }
 
-  Logger.log(`Processed ${sheetName}: ${count} emails sent.`);
+  Logger.log(`--- Email Summary for ${sheetName} ---`);
+  Logger.log(`Total rows processed: ${data.length}`);
+  Logger.log(`Emails successfully sent: ${count}`);
+  Logger.log(`--------------------------------------`);
 }
 
 /**
