@@ -6,8 +6,8 @@ const FORM_ID_LEADERSHIP = ''; // To be filled after running setup
 const SPREADSHEET_ID = '1370PuPE1cxzt8vJgUpcw69AU5KPk04WBU6oh5xWUBKk';
 const SEND_SHEET_NAME = 'Send_Form';
 const SEND_SHEET_LEADERSHIP = 'Send_Googlers';
-const RESPONSES_SHEET_NAME = 'Form Responses 1';
-const RESPONSES_SHEET_LEADERSHIP = 'Form Responses 2'; // Default name for 2nd linked form
+const RESPONSES_SHEET_NAME = 'Partner Responses';
+const RESPONSES_SHEET_LEADERSHIP = 'Googlers Responses';
 
 /**
  * Menu for easy access
@@ -24,6 +24,8 @@ function onOpen() {
       .addItem('Send Initial Emails', 'sendLeadershipEmails')
       .addItem('Send Reminders', 'sendLeadershipReminders')
       .addItem('Check Responses', 'checkLeadershipResponses'))
+    .addSeparator()
+    .addItem('Rename Existing Sheets to New Names', 'renameResponseSheets')
     .addToUi();
 }
 
@@ -287,4 +289,31 @@ function setupLeadershipSystem() {
   Logger.log("Form ID (save this): " + formId);
 
   SpreadsheetApp.getUi().alert("Leadership System Initialized!\n\nNew Form ID: " + formId + "\n\nPlease note the secondary 'Form Responses' tab that was just created automatically.\n\nYou should update FORM_ID_LEADERSHIP in the script if you want to automate reminders for this form.");
+}
+
+/**
+ * Utility to rename existing sheets if they follow the default naming pattern.
+ */
+function renameResponseSheets() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+
+  const renameMap = {
+    'Form Responses 1': 'Partner Responses',
+    'Form Responses 2': 'Googlers Responses'
+  };
+
+  let renamedCount = 0;
+  for (let oldName in renameMap) {
+    let sheet = ss.getSheetByName(oldName);
+    if (sheet) {
+      sheet.setName(renameMap[oldName]);
+      renamedCount++;
+    }
+  }
+
+  if (renamedCount > 0) {
+    SpreadsheetApp.getUi().alert(`Se han renombrado ${renamedCount} hoja(s).`);
+  } else {
+    SpreadsheetApp.getUi().alert("No se encontraron hojas con los nombres predeterminados (Form Responses 1/2). Es posible que ya las hayas renombrado.");
+  }
 }
