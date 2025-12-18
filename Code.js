@@ -149,14 +149,20 @@ function processGeneralEmails(sheetName, formId, templateName, subject, isRemind
   const range = sheet.getRange(2, 1, lastRow - 1, 5);
   const data = range.getValues();
 
-  let currentFormUrl;
-  if (!formId) {
+  let currentFormId = formId;
+  if (!currentFormId) {
+    // Fallback to ScriptProperties
+    currentFormId = PropertiesService.getScriptProperties().getProperty('FORM_ID_LEADERSHIP');
+  }
+
+  if (!currentFormId) {
     Logger.log("Error: FORM_ID_LEADERSHIP no configurado en el script.");
+    Logger.log("Sugerencia: Ejecuta 'Setup Internal System' primero o pega el ID en el script.");
     return;
   }
 
-  const form = FormApp.openById(formId);
-  currentFormUrl = form.getPublishedUrl();
+  const form = FormApp.openById(currentFormId);
+  let currentFormUrl = form.getPublishedUrl();
 
   const htmlTemplate = HtmlService.createTemplateFromFile(templateName);
   htmlTemplate.formUrl = currentFormUrl;
@@ -288,7 +294,10 @@ function setupLeadershipSystem() {
   Logger.log("New Form Created: " + formUrl);
   Logger.log("Form ID (save this): " + formId);
 
-  Logger.log("Leadership System Initialized!\n\nNew Form ID: " + formId + "\n\nPlease note the secondary 'Form Responses' tab that was just created automatically.\n\nYou should update FORM_ID_LEADERSHIP in the script if you want to automate reminders for this form.");
+  // Persist the ID automatically
+  PropertiesService.getScriptProperties().setProperty('FORM_ID_LEADERSHIP', formId);
+
+  Logger.log("Leadership System Initialized!\n\nNew Form ID: " + formId + "\n\nPlease note the secondary 'Form Responses' tab that was just created automatically.");
 }
 
 /**
