@@ -2,9 +2,15 @@
 <html>
 <head>
   <style>
+    /* Google Brand Colors:
+       Blue: #4285F4
+       Red: #EA4335
+       Yellow: #FBBC04
+       Green: #34A853
+    */
     body {
       font-family: 'Google Sans', 'Roboto', 'Segoe UI', Arial, sans-serif;
-      background-color: #f0f4f8;
+      background-color: #f8f9fa;
       margin: 0;
       padding: 0;
       color: #3c4043;
@@ -22,18 +28,18 @@
       height: 8px;
       background: repeating-linear-gradient(
         45deg,
-        #c41e3a,
-        #c41e3a 20px,
+        #EA4335, /* Google Red */
+        #EA4335 20px,
         #ffffff 20px,
         #ffffff 40px,
-        #165b33 40px,
-        #165b33 60px,
+        #34A853 40px, /* Google Green */
+        #34A853 60px,
         #ffffff 60px,
         #ffffff 80px
       );
     }
     .header {
-      background-color: #165b33; /* Forest Green */
+      background-color: #4285F4; /* Google Blue */
       padding: 50px 40px;
       text-align: center;
       position: relative;
@@ -44,34 +50,31 @@
       font-size: 28px;
       font-weight: 500;
       letter-spacing: 1px;
-      text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
     }
     .snowflake {
       position: absolute;
-      color: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.4);
       font-size: 20px;
     }
     .content {
       padding: 40px;
       line-height: 1.6;
-      background-image: radial-gradient(#f8f9fa 1px, transparent 1px);
-      background-size: 20px 20px;
     }
     .greeting {
       font-size: 20px;
-      color: #c41e3a; /* Christmas Red */
+      color: #EA4335; /* Google Red */
       margin-bottom: 24px;
       font-weight: 500;
     }
     .message {
       margin-bottom: 32px;
-      color: #37474f;
+      color: #3c4043;
     }
     .message p {
       margin-bottom: 16px;
     }
     .highlight {
-      color: #165b33;
+      color: #4285F4;
       font-weight: 500;
     }
     .cta-container {
@@ -79,36 +82,38 @@
       margin: 40px 0;
     }
     .button {
-      background-color: #c41e3a; /* Christmas Red */
+      background-color: #4285F4; /* Google Blue */
       color: #ffffff !important;
       padding: 16px 36px;
       text-decoration: none;
-      border-radius: 50px;
-      font-weight: 600;
+      border-radius: 4px; /* Google UI Style */
+      font-weight: 500;
       font-size: 16px;
       display: inline-block;
-      box-shadow: 0 4px 12px rgba(196, 30, 58, 0.3);
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: background-color 0.2s;
+    }
+    .button:hover {
+      background-color: #1a73e8;
     }
     .footer {
       background-color: #f8f9fa;
       padding: 30px;
       text-align: center;
       font-size: 13px;
-      color: #78909c;
-      border-top: 1px solid #eeeeee;
+      color: #70757a;
+      border-top: 1px solid #e0e0e0;
     }
     .gemini-badge {
       display: inline-flex;
       align-items: center;
-      background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+      background: linear-gradient(135deg, #e8f0fe 0%, #fef7e0 100%);
       padding: 10px 20px;
       border-radius: 20px;
       font-size: 13px;
-      color: #455a64;
+      color: #3c4043;
       margin-top: 24px;
       font-weight: 500;
-      border: 1px solid #e1bee7;
+      border: 1px solid #d2e3fc;
     }
   </style>
 </head>
@@ -120,50 +125,50 @@
       <span class="snowflake" style="top: 30px; right: 40px;">&#10052;</span>
       <span class="snowflake" style="bottom: 15px; left: 50px;">&#10052;</span>
       <h1>Google Cloud Readiness</h1>
-      <div style="color: #ffd700; font-size: 14px; margin-top: 10px; letter-spacing: 2px;">&iexcl;FELICES FIESTAS! &#127876;
-      </div>
+      <div style="color: #FBBC04; font-size: 14px; margin-top: 10px; letter-spacing: 2px; font-weight: 700;">&iexcl;FELICES
+        FIESTAS! &#127876;</div>
     </div>
     <div class="content">
       <div class="greeting">&iexcl;Hola! &#127873;</div>
       
       <div class="message">
         <p>
-          En esta &eacute;poca de celebraci&oacute;n, el equipo de <strong>Google Cloud Readiness</strong> quiere agradecerte por
-          ser parte de nuestra comunidad. Nuestra prioridad siempre es la excelencia en cada proyecto.
+          Como parte del equipo de <strong>Google Cloud Readiness</strong>, valoramos profundamente tu colaboraci&oacute;n. En
+          esta &eacute;poca de cierre de a&ntilde;o, queremos agradecerte por impulsarnos hacia la excelencia.
         </p>
         <p>
-          Mientras nos preparamos para cerrar este a&ntilde;o, queremos <strong>regalarte</strong> un espacio para tu
-          visi&oacute;n. Tus ideas son el motor que nos impulsa a mejorar.
+          Mirando hacia el futuro, tus ideas son fundamentales. Queremos escucharte para seguir construyendo juntos el mejor
+          camino.
         </p>
         <p>
-          Te invitamos a compartir tus reflexiones y decirnos: <strong>&iquest;En qu&eacute; deber&iacute;amos enfocarnos para el
+          Te invitamos a compartir tus reflexiones: <strong>&iquest;En qu&eacute; deber&iacute;amos enfocarnos para el
             2026?</strong>
         </p>
         <ul style="list-style: none; padding-left: 0;">
-          <li>&#10024; &iquest;Qu&eacute; necesitas de nosotros?</li>
-          <li>&#10024; &iquest;Qu&eacute; nuevas ideas tienes?</li>
-          <li>&#10024; &iquest;Qu&eacute; sientes que hace falta?</li>
+          <li><span style="color: #4285F4;">&#10024;</span> &iquest;Qu&eacute; necesitas de nosotros?</li>
+          <li><span style="color: #34A853;">&#10024;</span> &iquest;Qu&eacute; nuevas ideas tienes?</li>
+          <li><span style="color: #EA4335;">&#10024;</span> &iquest;Qu&eacute; sientes que hace falta?</li>
         </ul>
         <p>
-          Hemos dise&ntilde;ado <strong>una &uacute;nica pregunta abierta</strong> para que dejes volar tu creatividad.
+          Hemos dise&ntilde;ado <strong>una &uacute;nica pregunta abierta</strong> para que puedas expresarte con total libertad.
         </p>
         
         <div style="text-align: center;">
           <div class="gemini-badge">
-            <span>&#10024; Inteligencia de Gemini</span>
+            <span style="color: #4285F4; margin-right: 4px;">&#10024;</span> Inteligencia de Gemini
           </div>
-          <p style="font-size: 12px; color: #78909c; margin-top: 12px; font-style: italic;">
-            Gemini analizar&aacute; cada respuesta para iluminar nuestro camino hacia el 2026.
+          <p style="font-size: 12px; color: #70757a; margin-top: 12px; font-style: italic;">
+            Gemini analizar&aacute; cada respuesta para iluminar nuestra planeaci&oacute;n 2026.
           </p>
         </div>
       </div>
 
       <div class="cta-container">
-        <a href="<?= formUrl ?>" class="button">Compartir mis ideas de Mejoras &#127873;</a>
+        <a href="<?= formUrl ?>" class="button" style="background-color: #EA4335;">Compartir mis ideas de Mejoras &#127873;</a>
       </div>
     </div>
     <div class="footer">
-      <p>&#127876; Con los mejores deseos, el equipo de Google Cloud Readiness</p>
+      <p style="color: #34A853; font-weight: 500;">&#127876; Felices Fiestas del equipo de Google Cloud Readiness</p>
       <p style="margin-top: 10px;">&copy; 2025 | Google Cloud</p>
     </div>
   </div>
