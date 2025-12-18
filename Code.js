@@ -326,23 +326,35 @@ function linkExistingLeadershipForm() {
 function renameResponseSheets() {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
+  // Looking for common default names Google creates
   const renameMap = {
     'Form Responses 1': 'Partner Responses',
-    'Form Responses 2': 'Googlers Responses'
+    'Form Responses 2': 'Googlers Responses',
+    'Form Responses 3': 'Googlers Responses',
+    'Form_Responses2': 'Googlers Responses'
   };
 
   let renamedCount = 0;
   for (let oldName in renameMap) {
     let sheet = ss.getSheetByName(oldName);
+    let targetName = renameMap[oldName];
+
     if (sheet) {
-      sheet.setName(renameMap[oldName]);
-      renamedCount++;
+      // Check if the target name already exists to avoid errors
+      let existingTarget = ss.getSheetByName(targetName);
+      if (!existingTarget) {
+        sheet.setName(targetName);
+        renamedCount++;
+        Logger.log(`Renamed '${oldName}' to '${targetName}'`);
+      } else {
+        Logger.log(`Target name '${targetName}' already exists. Skipping '${oldName}'.`);
+      }
     }
   }
 
   if (renamedCount > 0) {
-    Logger.log(`Se han renombrado ${renamedCount} hoja(s).`);
+    Logger.log(`Successfully renamed ${renamedCount} sheet(s).`);
   } else {
-    Logger.log("No se encontraron hojas con los nombres predeterminados (Form Responses 1/2). Es posible que ya las hayas renombrado.");
+    Logger.log("No default Form Response sheets were found to rename. Your sheets might already be named correctly ('Partner Responses' and 'Googlers Responses').");
   }
 }
