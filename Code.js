@@ -27,6 +27,7 @@ function onOpen() {
       .addItem('Check Responses', 'checkLeadershipResponses'))
     .addSeparator()
     .addItem('Rename Existing Sheets to New Names', 'renameResponseSheets')
+    .addItem('Check System Status (Audit)', 'checkSystemStatus')
     .addToUi();
 }
 
@@ -258,50 +259,81 @@ function processGeneralResponses(sendSheetName, respSheetName, emailColIndex) {
 /**
  * SETUP LEADERSHIP SYSTEM
  * Creates a new form and the 'Send_Googlers' sheet.
+ * Now includes a check to prevent accidental duplicates.
  */
 function setupLeadershipSystem() {
   const SPREADSHEET_ID = '1370PuPE1cxzt8vJgUpcw69AU5KPk04WBU6oh5xWUBKk';
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
 
-  // 1. Create 'Send_Googlers' sheet if it doesn't exist
+  // 1. Check if we already have a Leadership Form ID
+  const existingId = PropertiesService.getScriptProperties().getProperty('FORM_ID_LEADERSHIP');
+  if (existingId) {
+    Logger.log("⚠️ Ya existe un Formulario de Liderazgo vinculado (ID: " + existingId + ").");
+    Logger.log("Si deseas crear uno nuevo, borra primero el ID de las 'Script Properties' o usa 'Link Existing Leadership Form ID' para cambiarlo.");
+    return;
+  }
+
+  // 2. Create 'Send_Googlers' sheet if it doesn't exist
   let googlersSheet = ss.getSheetByName('Send_Googlers');
   if (!googlersSheet) {
     googlersSheet = ss.insertSheet('Send_Googlers');
-    // Align with the original sheet structure but for internals
     googlersSheet.getRange('A1:E1').setValues([['Email', 'Name', 'Comments', 'Status', 'Responded Status']]);
     googlersSheet.getRange('A1:E1').setFontWeight('bold').setBackground('#e8eaed');
     googlersSheet.setFrozenRows(1);
     Logger.log("Created 'Send_Googlers' sheet.");
   }
 
-  // 2. Create the Leadership Form
+  // 3. Create the Leadership Form (English)
   const newForm = FormApp.create('Google Cloud Leadership Feedback 2026')
     .setTitle('Excellence in 2026: Leadership Vision')
     .setDescription('Feedback from Google Managers and Leaders regarding readiness and strategy for 2026.')
     .setCollectEmail(true)
-    .setRequireLogin(true) // For internals
+    .setRequireLogin(true)
     .setAllowResponseEdits(true);
 
-  // Add the open creativity question
   newForm.addParagraphTextItem()
     .setTitle('Where should the Readiness team focus in 2026? Share your ideas, feedback, and creative vision.')
     .setRequired(true);
 
-  // Link to spreadsheet
   newForm.setDestination(FormApp.DestinationType.SPREADSHEET, SPREADSHEET_ID);
 
   const formUrl = newForm.getPublishedUrl();
   const formId = newForm.getId();
 
-  Logger.log("New Form Created: " + formUrl);
-  Logger.log("Form ID (save this): " + formId);
-
   // Persist the ID automatically
   PropertiesService.getScriptProperties().setProperty('FORM_ID_LEADERSHIP', formId);
 
-  Logger.log("Leadership System Initialized!\n\nNew Form ID: " + formId + "\n\nPlease note the secondary 'Form Responses' tab that was just created automatically.");
+  Logger.log("✅ Success: New Leadership Form Created: " + formUrl);
+  Logger.log("Leadership System Initialized! Note the new tab created in this spreadsheet.");
 }
 
+/**
+ * Identify and Audit: Shows which forms and sheets are currently active.
+ */
+function checkSystemStatus() {
+  const props = PropertiesService.getScriptProperties();
+  const partnerId = FORM_ID;
+  const leadId = props.getProperty('FORM_ID_LEADERSHIP') || "NOT SET";
+
+  Logger.log("--- SYSTEM AUDIT ---");
+  Logger.log("1. Partner Form ID: " + partnerId);
+  Logger.log("2. Leadership Form ID: " + leadId);
+
+  try {
+    const partnerForm = FormApp.openById(partnerId);
+    Logger.log("✅ Partner Form is LIVE: " + partnerForm.getPublishedUrl());
+  } catch (e) { Logger.log("❌ Partner Form Error: " + e.message); }
+
+  try {
+    const leadForm = FormApp.openById(leadId);
+    Logger.log("✅ Leadership Form is LIVE: " + leadForm.getPublishedUrl());
+  } catch (e) { Logger.log("❌ Leadership Form Error: " + e.message); }
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheets = ss.getSheets().map(s => s.getName());
+  Logger.log("3. Current Spreadsheet Tabs: " + sheets.join(", "));
+  Logger.log("--------------------");
+}
 /**
  * Manually link an existing form ID to the leadership system.
  */
