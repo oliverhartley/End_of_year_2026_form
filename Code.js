@@ -57,9 +57,11 @@ function checkResponses() {
 
 /**
  * Sends initial emails to Leadership (English).
+ * Now includes the Infographic as a robust inline image.
  */
 function sendLeadershipEmails() {
-  processGeneralEmails(SEND_SHEET_LEADERSHIP, null, 'email_en', false, false);
+  const infographicId = '1h1VBpbmY2iXH7gSiK9qspu7nlbLQwiaJ';
+  processGeneralEmails(SEND_SHEET_LEADERSHIP, null, 'email_en', false, false, infographicId);
 }
 
 /**
@@ -79,7 +81,7 @@ function checkLeadershipResponses() {
 /**
  * Generic Processor for Emails
  */
-function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLanguageRouting) {
+function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLanguageRouting, inlineImageId) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const sheet = ss.getSheetByName(sheetName);
   if (!sheet) {
@@ -118,6 +120,17 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
     'reminder_en': 'Reminder: Feedback for 2026'
   };
 
+  // Prepare inline image blob if ID exists
+  let inlineImages = {};
+  if (inlineImageId) {
+    try {
+      const blob = DriveApp.getFileById(inlineImageId).getBlob();
+      inlineImages['infographic'] = blob;
+    } catch (e) {
+      Logger.log("Warning: Could not fetch inline image: " + e.message);
+    }
+  }
+
   let count = 0;
   const statusUpdates = [];
 
@@ -151,7 +164,8 @@ function processGeneralEmails(sheetName, formId, baseTemplate, isReminder, useLa
 
         GmailApp.sendEmail(email, subject, '', {
           htmlBody: htmlBody,
-          name: 'Google Cloud Readiness Team'
+          name: 'Google Cloud Readiness Team',
+          inlineImages: inlineImages
         });
         statusUpdates.push(['Shared']);
         count++;
